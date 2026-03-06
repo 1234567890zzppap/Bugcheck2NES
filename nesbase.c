@@ -391,7 +391,7 @@ struct Frame {
 
 struct Frame frame = { SCREEN_W, SCREEN_H, frame_buffer };
 
-VOID main(PVOID Buffer, ULONG Length) {
+VOID NTAPI main(PVOID Buffer, ULONG Length) {
     
 //Enable PS/2 Keyboard
 	while ((__inbyte(0x64) & 2) != 0)
