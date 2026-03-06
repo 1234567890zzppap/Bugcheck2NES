@@ -1,5 +1,8 @@
 # Bugcheck2NES
 Windows crashed? Dropping you into a NES Emu!
+# Snapshot
+![img](https://raw.githubusercontent.com/1234567890zzppap/Bugcheck2NES/refs/heads/main/img/1.png)
+![img](https://raw.githubusercontent.com/1234567890zzppap/Bugcheck2NES/refs/heads/main/img/2.png)
 
 # How to run it?
 
