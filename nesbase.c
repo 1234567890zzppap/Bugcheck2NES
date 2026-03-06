@@ -391,13 +391,6 @@ struct Frame {
 
 struct Frame frame = { SCREEN_W, SCREEN_H, frame_buffer };
 
-//LRESULT CALLBACK WindowProcessMessage(HWND, UINT, WPARAM, LPARAM);
-
-// static BITMAPINFO frame_bitmap_info;
-// static HBITMAP frame_bitmap = 0;
-// static HDC frame_device_context = 0;
-
-
 VOID main(PVOID Buffer, ULONG Length) {
     
 //Enable PS/2 Keyboard
@@ -873,45 +866,6 @@ VOID main(PVOID Buffer, ULONG Length) {
   }
 }
 
-// LRESULT CALLBACK WindowProcessMessage(HWND window_handle, UINT message, WPARAM wParam, LPARAM lParam) {
-//     
-
-//        case WM_KEYDOWN:
-// {
-//     switch(wParam) {
-//         case 'Z':       controller1 |= (1 << 0); break;
-//         case 'X':       controller1 |= (1 << 1); break;
-//         case VK_BACK:   controller1 |= (1 << 2); break;
-//         case VK_RETURN: controller1 |= (1 << 3); break;
-//         case VK_UP:     controller1 |= (1 << 4); break;
-//         case VK_DOWN:   controller1 |= (1 << 5); break;
-//         case VK_LEFT:   controller1 |= (1 << 6); break;
-//         case VK_RIGHT:  controller1 |= (1 << 7); break;
-//     }
-// }
-// break;
-
-// case WM_KEYUP:
-// {
-//     switch(wParam) {
-//         case 'Z':       controller1 &= ~(1 << 0); break;
-//         case 'X':       controller1 &= ~(1 << 1); break;
-//         case VK_BACK:   controller1 &= ~(1 << 2); break;
-//         case VK_RETURN: controller1 &= ~(1 << 3); break;
-//         case VK_UP:     controller1 &= ~(1 << 4); break;
-//         case VK_DOWN:   controller1 &= ~(1 << 5); break;
-//         case VK_LEFT:   controller1 &= ~(1 << 6); break;
-//         case VK_RIGHT:  controller1 &= ~(1 << 7); break;
-//     }
-// }
-// break;
-
-//         default: {
-//             return DefWindowProc(window_handle, message, wParam, lParam);
-//         }
-//     }
-//     return 0;
-// }
 NTSTATUS DriverEntry(PDRIVER_OBJECT DriverObject,
 	PUNICODE_STRING RegistryPath) {
 BOOLEAN Registered;
