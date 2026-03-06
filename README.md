@@ -24,9 +24,9 @@ sc start nesDriver
 
 # How to build?
 
-...
+```
 Install DDK 7600 and cd this folder and build /cz
-...
+```
 
 # Limitations?
 
