@@ -38,7 +38,22 @@ build /cz
 * Runs at 640x480 with 16 colors.
 * Only works on BIOS systems.
 * Is really slow at times.
-* Keyboard support is poor. 
+* Keyboard support is poor.
+* DO NOT MOVE YOUR MOUSE WHEN YOU PLAY.It will broken input.
+
+# Input
+
+| Action | Key |
+| --- | --- |
+| DPAD-UP | <kbd>W</kbd> |
+| DPAD-DOWN | <kbd>S</kbd> |
+| DPAD-LEFT | <kbd>A</kbd> |
+| DPAD-RIGHT | <kbd>D</kbd> |
+| B | <kbd>Z</kbd> |
+| A | <kbd>X</kbd> |
+| START | <kbd>Enter</kbd> |
+| SELECT | <kbd>T</kbd> |
+| QUIT | <kbd>Q</kbd> |
 
 # Credits
 
