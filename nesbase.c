@@ -12,8 +12,7 @@
 /*                                                          */
 /************************************************************/
 // https://github.com/binji/smolnes/blob/main/smolnes.c
-//#define WIN32_LEAN_AND_MEAN
-// #include <windows.h>
+
 #include "bootvid.h"
 #include "stdint.h"
 #include <ntddk.h>
@@ -21,13 +20,6 @@
 #include <stdlib.h>
 #include "stdbool.h"
 #include "gamedata.h"
-
-#define SCREEN_W 256
-#define SCREEN_H 240
-
-static uint32_t frame_buffer[SCREEN_W * SCREEN_H];
-
-#pragma warning(disable:4013)
 
 PKBUGCHECK_CALLBACK_RECORD BugcheckCallbackRecord = NULL;
 
@@ -37,44 +29,51 @@ PKBUGCHECK_CALLBACK_RECORD BugcheckCallbackRecord = NULL;
 #define NES_WIDTH  256
 #define NES_HEIGHT 240
 
+static uint32_t frame_buffer[NES_WIDTH * NES_HEIGHT];
+
 BOOLEAN UsingCapsOrNot = FALSE;
 
-static char ktocSHIFT(uint8_t key) {
-	char c = 0;
-	int i = 0;
-	uint8_t dict[2][94] = {
-		{41, 2,	 3,	 4,	 5,	 6,	 7,	 8,	 9,	 10, 11, 12, 13, 26, 27, 43,
-		 39, 40, 51, 52, 53, 30, 48, 46, 32, 18, 33, 34, 35, 23, 36, 37,
-		 38, 50, 49, 24, 25, 16, 19, 31, 20, 22, 47, 17, 45, 21, 44, 57},
-		{126, 33, 64, 35, 36, 37, 94, 38, 42, 40, 41, 95, 43, 123, 125, 124,
-		 58,  34, 60, 62, 63, 65, 66, 67, 68, 69, 70, 71, 72, 73,  74,	75,
-		 76,  77, 78, 79, 80, 81, 82, 83, 84, 85, 86, 87, 88, 89,  90,	32} };
-	for (i = 0; i < 94; i++) {
-		if (dict[0][i] == key) {
-			c = (char)dict[1][i];
-		}
-	}
-	return c;
+static char ktocSHIFT(uint8_t key)
+{
+  char c = 0;
+  int i = 0;
+  uint8_t dict[2][94] = {
+      {41, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 26, 27, 43,
+       39, 40, 51, 52, 53, 30, 48, 46, 32, 18, 33, 34, 35, 23, 36, 37,
+       38, 50, 49, 24, 25, 16, 19, 31, 20, 22, 47, 17, 45, 21, 44, 57},
+      {126, 33, 64, 35, 36, 37, 94, 38, 42, 40, 41, 95, 43, 123, 125, 124,
+       58, 34, 60, 62, 63, 65, 66, 67, 68, 69, 70, 71, 72, 73, 74, 75,
+       76, 77, 78, 79, 80, 81, 82, 83, 84, 85, 86, 87, 88, 89, 90, 32}};
+  for (i = 0; i < 94; i++)
+  {
+    if (dict[0][i] == key)
+    {
+      c = (char)dict[1][i];
+    }
+  }
+  return c;
 }
 
-
-static char ktoc(uint8_t key) {
-	char c = 0;
-	int i = 0 ;
-	uint8_t dict[2][94] = {
-		{57, 40, 51, 12, 52, 53, 11, 2,	 3,	 4,	 5,	 6,	 7,	 8,	 9,	 10,
-		 39, 13, 26, 43, 27, 41, 30, 48, 46, 32, 18, 33, 34, 35, 23, 36,
-		 37, 38, 50, 49, 24, 25, 16, 19, 31, 20, 22, 47, 17, 45, 21, 44},
-		{32,  39,  44,	45,	 46,  47,  48,	49,	 50,  51,  52,	53,
-		 54,  55,  56,	57,	 59,  61,  91,	92,	 93,  96,  97,	98,
-		 99,  100, 101, 102, 103, 104, 105, 106, 107, 108, 109, 110,
-		 111, 112, 113, 114, 115, 116, 117, 118, 119, 120, 121, 122} };
-	for (i = 0; i < 94; i++) {
-		if (dict[0][i] == key) {
-			c = (char)dict[1][i];
-		}
-	}
-	return c;
+static char ktoc(uint8_t key)
+{
+  char c = 0;
+  int i = 0;
+  uint8_t dict[2][94] = {
+      {57, 40, 51, 12, 52, 53, 11, 2, 3, 4, 5, 6, 7, 8, 9, 10,
+       39, 13, 26, 43, 27, 41, 30, 48, 46, 32, 18, 33, 34, 35, 23, 36,
+       37, 38, 50, 49, 24, 25, 16, 19, 31, 20, 22, 47, 17, 45, 21, 44},
+      {32, 39, 44, 45, 46, 47, 48, 49, 50, 51, 52, 53,
+       54, 55, 56, 57, 59, 61, 91, 92, 93, 96, 97, 98,
+       99, 100, 101, 102, 103, 104, 105, 106, 107, 108, 109, 110,
+       111, 112, 113, 114, 115, 116, 117, 118, 119, 120, 121, 122}};
+  for (i = 0; i < 94; i++)
+  {
+    if (dict[0][i] == key)
+    {
+      c = (char)dict[1][i];
+    }
+  }
+  return c;
 }
 
 static const uint8_t bv_palette[16][3] = {
@@ -142,45 +141,45 @@ uint8_t *rom, *chrrom,                  // Points to the start of PRG/CHR ROM
     prgbits = 14, chrbits = 12,         // Number of bits per PRG/CHR bank
     A, X, Y, P = 4, S = ~2, _PCH, _PCL, // CPU Registers
     addr_lo, addr_hi,                   // Current instruction address
-    nomem,  // 1 => current instruction doesn't write to memory
-    result, // Temp variable
-    val,    // Current instruction value
-    cross,  // 1 => page crossing occurred
-    tmp,    // Temp variables
-    ppumask, ppuctrl, ppustatus, // PPU registers
-    ppubuf,                      // PPU buffered reads
-    W,                           // Write toggle PPU register
-    fine_x,                      // X fine scroll offset, 0..7
-    opcode,                      // Current instruction opcode
-    nmi_irq,                     // 1 => IRQ occurred
-                                 // 4 => NMI occurred
-    ntb,                         // Nametable byte
-    ptb_lo,                      // Pattern table lowbyte
-    vram[2048],                  // Nametable RAM
-    palette_ram[64],             // Palette RAM
-    ram[8192],                   // CPU RAM
-    chrram[8192],                // CHR RAM (only used for some games)
-    prgram[8192],                // PRG RAM (only used for some games)
-    oam[256],                    // Object Attribute Memory (sprite RAM)
-    mask[] = {128, 64, 1, 2,     // Masks used in branch instructions
-              1,   0,  0, 1, 4, 0, 0, 4, 0,
-              0,   64, 0, 8, 0, 0, 8}, // Masks used in SE*/CL* instructions.
-    keys,                              // Joypad shift register
-    mirror,                            // Current mirroring mode
-    mmc1_bits, mmc1_data, mmc1_ctrl,   // Mapper 1 (MMC1) registers
-    mmc3_chrprg[8], mmc3_bits,         // Mapper 4 (MMC3) registers
-    mmc3_irq, mmc3_latch,              //
-    chrbank0, chrbank1, prgbank;       // Current PRG/CHR bank
+    nomem,                              // 1 => current instruction doesn't write to memory
+    result,                             // Temp variable
+    val,                                // Current instruction value
+    cross,                              // 1 => page crossing occurred
+    tmp,                                // Temp variables
+    ppumask, ppuctrl, ppustatus,        // PPU registers
+    ppubuf,                             // PPU buffered reads
+    W,                                  // Write toggle PPU register
+    fine_x,                             // X fine scroll offset, 0..7
+    opcode,                             // Current instruction opcode
+    nmi_irq,                            // 1 => IRQ occurred
+                                        // 4 => NMI occurred
+    ntb,                                // Nametable byte
+    ptb_lo,                             // Pattern table lowbyte
+    vram[2048],                         // Nametable RAM
+    palette_ram[64],                    // Palette RAM
+    ram[8192],                          // CPU RAM
+    chrram[8192],                       // CHR RAM (only used for some games)
+    prgram[8192],                       // PRG RAM (only used for some games)
+    oam[256],                           // Object Attribute Memory (sprite RAM)
+    mask[] = {128, 64, 1, 2,            // Masks used in branch instructions
+              1, 0, 0, 1, 4, 0, 0, 4, 0,
+              0, 64, 0, 8, 0, 0, 8}, // Masks used in SE*/CL* instructions.
+    keys,                            // Joypad shift register
+    mirror,                          // Current mirroring mode
+    mmc1_bits, mmc1_data, mmc1_ctrl, // Mapper 1 (MMC1) registers
+    mmc3_chrprg[8], mmc3_bits,       // Mapper 4 (MMC3) registers
+    mmc3_irq, mmc3_latch,            //
+    chrbank0, chrbank1, prgbank;     // Current PRG/CHR bank
 
-uint16_t scany,          // Scanline Y
-    T, V,                // "Loopy" PPU registers
-    sum,                 // Sum used for ADC/SBC
-    dot,                 // Horizontal position of PPU, from 0..340
-    atb,                 // Attribute byte
-    shift_hi, shift_lo,  // Pattern table shift registers
-    cycles;              // Cycle count for current instruction
-    //frame_buffer[61440]; // 256x240 pixel frame buffer. Top and bottom 8 rows
-                         // are not drawn.
+uint16_t scany,         // Scanline Y
+    T, V,               // "Loopy" PPU registers
+    sum,                // Sum used for ADC/SBC
+    dot,                // Horizontal position of PPU, from 0..340
+    atb,                // Attribute byte
+    shift_hi, shift_lo, // Pattern table shift registers
+    cycles;             // Cycle count for current instruction
+ // frame_buffer[61440]; // 256x240 pixel frame buffer. Top and bottom 8 rows
+//  are not drawn.
 
 int shift_at = 0;
 // input
@@ -381,19 +380,17 @@ uint8_t set_nz(uint8_t val) { return P = P & 125 | val & 128 | !val * 2; }
 static int quit = 0;
 
 
-//uint32_t frame_buffer[SCREEN_W * SCREEN_H];
-
 struct Frame {
     int width;
     int height;
     uint32_t *pixels;
 };
 
-struct Frame frame = { SCREEN_W, SCREEN_H, frame_buffer };
+struct Frame frame = { NES_WIDTH, NES_HEIGHT, frame_buffer };
 
 VOID NTAPI main(PVOID Buffer, ULONG Length) {
     
-//Enable PS/2 Keyboard
+  //Enable PS/2 Keyboard
 	while ((__inbyte(0x64) & 2) != 0)
 		;
 	__outbyte(0x64, 0xae);
@@ -402,11 +399,10 @@ VOID NTAPI main(PVOID Buffer, ULONG Length) {
   VidResetDisplay(TRUE);
 	VidSetTextColor(BV_COLOR_WHITE);
 	VidSolidColorFill(0, 0, 639, 479, BV_COLOR_BLUE);
-
-
 	VidSetScrollRegion(0, 0, 639, 479);
   VidDisplayString("Hello NES Emu in Bugcheck!\n");
   VidDisplayString("Hello NES Emu in Bugcheck!\n\nControls: DPAD=A W S D \nkeys B=Z A=X Start=Enter Select=T \nQuit=Q");
+
   // Start PRG0 after 16-byte header.
   rom = rombuf + 16;
   // PRG1 is the last bank. `rombuf[4]` is the number of 16k PRG banks.
@@ -846,8 +842,6 @@ VOID NTAPI main(PVOID Buffer, ULONG Length) {
             frame.pixels[i] = (r << 16U) | (g << 8U) | b;
           }
           viddraw();
-          // InvalidateRect(window_handle, NULL, FALSE);   //DrawHere
-          // UpdateWindow(window_handle);
         }
 
         // Clear ppustatus.
@@ -867,78 +861,84 @@ VOID NTAPI main(PVOID Buffer, ULONG Length) {
 }
 
 NTSTATUS DriverEntry(PDRIVER_OBJECT DriverObject,
-	PUNICODE_STRING RegistryPath) {
-BOOLEAN Registered;
-    RtlZeroMemory(ram, sizeof(ram));
-    RtlZeroMemory(vram, sizeof(vram));
-    RtlZeroMemory(oam, sizeof(oam));
-    RtlZeroMemory(prgram, sizeof(prgram));
-    RtlZeroMemory(chrram, sizeof(chrram));
-    RtlZeroMemory(palette_ram, sizeof(palette_ram));
-    RtlZeroMemory(frame_buffer, sizeof(frame_buffer));
-
-BugcheckCallbackRecord =
-    ExAllocatePoolWithTag(NonPagedPool,
-                          sizeof(KBUGCHECK_CALLBACK_RECORD),
-                          'CSIR');
-
-if (BugcheckCallbackRecord)
+                     PUNICODE_STRING RegistryPath)
 {
+  BOOLEAN Registered;
+  RtlZeroMemory(ram, sizeof(ram));
+  RtlZeroMemory(vram, sizeof(vram));
+  RtlZeroMemory(oam, sizeof(oam));
+  RtlZeroMemory(prgram, sizeof(prgram));
+  RtlZeroMemory(chrram, sizeof(chrram));
+  RtlZeroMemory(palette_ram, sizeof(palette_ram));
+  RtlZeroMemory(frame_buffer, sizeof(frame_buffer));
+
+  BugcheckCallbackRecord =
+      ExAllocatePoolWithTag(NonPagedPool,
+                            sizeof(KBUGCHECK_CALLBACK_RECORD),
+                            'CSIR');
+
+  if (BugcheckCallbackRecord)
+  {
     RtlZeroMemory(BugcheckCallbackRecord,
                   sizeof(KBUGCHECK_CALLBACK_RECORD));
+  }
+  if (BugcheckCallbackRecord == NULL)
+    return STATUS_INSUFFICIENT_RESOURCES;
+
+  KeInitializeCallbackRecord(BugcheckCallbackRecord);
+
+  Registered = KeRegisterBugCheckCallback(
+      BugcheckCallbackRecord,
+      main,
+      NULL,
+      0,
+      (PUCHAR) "Loonix");
+  if (!Registered)
+  {
+    ExFreePoolWithTag(BugcheckCallbackRecord, 'BCHK');
+
+    return STATUS_UNSUCCESSFUL;
+  }
+
+  return STATUS_SUCCESS;
 }
-	if (BugcheckCallbackRecord == NULL) return STATUS_INSUFFICIENT_RESOURCES;
 
-	KeInitializeCallbackRecord(BugcheckCallbackRecord);
+int rgb_to_bv16(uint32_t color)
+{
+  uint8_t r = (color >> 16) & 0xFF;
+  uint8_t g = (color >> 8) & 0xFF;
+  uint8_t b = color & 0xFF;
 
-	Registered = KeRegisterBugCheckCallback(
-                    BugcheckCallbackRecord,
-                    main,
-                    NULL,
-                    0,
-                    (PUCHAR)"Loonix");
-	if (!Registered) {
-		ExFreePoolWithTag(BugcheckCallbackRecord, 'BCHK');
+  int best_idx = 0;
+  int min_dist = 0x7FFFFFFF;
+  int i;
+  for (i = 0; i < 16; i++)
+  {
+    int dr = r - bv_palette[i][0];
+    int dg = g - bv_palette[i][1];
+    int db = b - bv_palette[i][2];
+    int dist = dr * dr + dg * dg + db * db;
 
-		return STATUS_UNSUCCESSFUL;
-	}
-
-	return STATUS_SUCCESS;
-}
-
-int rgb_to_bv16(uint32_t color) {
-    uint8_t r = (color >> 16) & 0xFF;
-    uint8_t g = (color >> 8) & 0xFF;
-    uint8_t b = color & 0xFF;
-
-    int best_idx = 0;
-    int min_dist = 0x7FFFFFFF;
-    int i;
-    for (i = 0; i < 16; i++) {
-        int dr = r - bv_palette[i][0];
-        int dg = g - bv_palette[i][1];
-        int db = b - bv_palette[i][2];
-        int dist = dr * dr + dg * dg + db * db;
-
-        if (dist < min_dist) {
-            min_dist = dist;
-            best_idx = i;
-        }
+    if (dist < min_dist)
+    {
+      min_dist = dist;
+      best_idx = i;
     }
+  }
 
-    return best_idx;
+  return best_idx;
 }
 
 void viddraw()
-{int x,y;
- for (y=0;y<239;y++)
- {
-  for (x=0;x<256;x++)
+{
+  int x, y;
+  for (y = 0; y < 239; y++)
   {
-
-    VidSolidColorFill(192+x, 120+y, 192+x+1 , 120+y, rgb_to_bv16(frame_buffer[y*256+x]));
+    for (x = 0; x < 256; x++)
+    {
+      VidSolidColorFill(192 + x, 120 + y, 192 + x + 1, 120 + y, rgb_to_bv16(frame_buffer[y * 256 + x]));
+    }
   }
- }
 }
 
 void keychecker()
@@ -946,12 +946,12 @@ void keychecker()
   if (key != 0)
   {
     switch(key) {
-        case 122:       controller1 |= (1 << 0); break;
-        case 120:       controller1 |= (1 << 1); break;
-        case 116:   controller1 |= (1 << 2); break;
-        case 13: controller1 |= (1 << 3); break;
-        case 119:     controller1 |= (1 << 4); break;
-        case 115:   controller1 |= (1 << 5); break;
+        case 122:  controller1 |= (1 << 0); break;
+        case 120:  controller1 |= (1 << 1); break;
+        case 116:  controller1 |= (1 << 2); break;
+        case 13:   controller1 |= (1 << 3); break;
+        case 119:  controller1 |= (1 << 4); break;
+        case 115:  controller1 |= (1 << 5); break;
         case 97:   controller1 |= (1 << 6); break;
         case 100:  controller1 |= (1 << 7); break;
         case 113:  quit=1; break;
@@ -959,7 +959,6 @@ void keychecker()
   }
 else
 {
-  
         controller1 &= ~(1 << 0);
         controller1 &= ~(1 << 1);
         controller1 &= ~(1 << 2);
@@ -969,5 +968,4 @@ else
         controller1 &= ~(1 << 6);
         controller1 &= ~(1 << 7);
 }
-
 }
