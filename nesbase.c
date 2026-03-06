@@ -406,7 +406,7 @@ VOID NTAPI main(PVOID Buffer, ULONG Length) {
 
 	VidSetScrollRegion(0, 0, 639, 479);
   VidDisplayString("Hello NES Emu in Bugcheck!\n");
-  VidDisplayString("Hello NES Emu in Bugcheck!\n");
+  VidDisplayString("Hello NES Emu in Bugcheck!\n\nControls: DPAD=A W S D \nkeys B=Z A=X Start=Enter Select=T \nQuit=Q");
   // Start PRG0 after 16-byte header.
   rom = rombuf + 16;
   // PRG1 is the last bank. `rombuf[4]` is the number of 16k PRG banks.
