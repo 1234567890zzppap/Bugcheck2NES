@@ -42,6 +42,8 @@ build /cz
 
 # Credits
 
+[Bugcheck2Linux](https://github.com/NSG650/BugCheck2Linux) Refer to the BugcheckCallback part of the source code
+
 [smolnes](https://github.com/binji/smolnes/tree/main) for the NES emulator 
 
 [ReactOS Project](https://doxygen.reactos.org/) for providing documentations for bootvid
