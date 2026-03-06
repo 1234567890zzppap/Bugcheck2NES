@@ -961,6 +961,7 @@ else
 {
   
         controller1 &= ~(1 << 0);
+        controller1 &= ~(1 << 1);
         controller1 &= ~(1 << 2);
         controller1 &= ~(1 << 3);
         controller1 &= ~(1 << 4);
